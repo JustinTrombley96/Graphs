@@ -32,7 +32,6 @@ class Graph:
         Print each vertex in breadth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
         # make a queue
         q = Queue()
         # enqueue our starting node
@@ -47,10 +46,11 @@ class Graph:
             current_node = q.dequeue()
         ## if we haven't visited this node yet,
             if current_node not in visited:
+                print(current_node)
         ### mark as visited
                 visited.add(current_node)
         ### get its neighbors
-                neighbors = self.get_neighbors()
+                neighbors = self.get_neighbors(current_node)
         ### for each of the neighbors,
                 for neighbor in neighbors:
         #### add to queue
@@ -63,22 +63,28 @@ class Graph:
         Print each vertex in depth-first order
         beginning from starting_vertex.
         """
-        pass  # TODO
         # make a shtack
         # push on our starting node
         s = Stack()
+        s.push(starting_vertex)
         # make a set to track if we've been here before
         visited = set()
         # while our stack isn't empty
-        
+        while s.size() > 0:
         ## pop off whatever's on top, this is current_node
-
+            current_node = s.pop()
         ## if we haven't visited this vertex before
+            if current_node not in visited:
         ### run function / print
+                print(current_node)
         ### mark as visited
+                visited.add(current_node)
         ### get its neighbors
+                neighbors = self.get_neighbors(current_node)
         ### for each of the neighbors
+                for neighbor in neighbors:
         #### add to our stack
+                    s.push(neighbor)
 
 
     def dft_recursive(self, starting_vertex):
@@ -96,7 +102,48 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
-        pass  # TODO
+        # keep track of all the paths to be checked
+        q = Queue()
+        q.enqueue(starting_vertex)
+        # keep track of explored nodes
+        visited = []
+        #return path if start is goal
+        if starting_vertex == destination_vertex:
+            return "You have arrived"
+        
+        # keeps looping until all possible paths have been checked
+        while q:
+            # pop the first path from the queue
+            path = q.dequeue()
+            print("This is my path: ", path)
+
+            # get the last node from the path
+            if type(path) is not 'list':
+                path = [path]
+            node = path[len(path)]
+            if node not in visited:
+                print("This is my node: ", node)
+                neighbors = self.get_neighbors(node)
+                print('These are my neighbors',neighbors)
+
+                # go through all neighbour nodes, construct a new path and
+                # push it into the queue
+                for neighbor in neighbors:
+                    new_path = list(path)
+                    new_path.append(neighbor)
+                    q.enqueue(new_path)
+
+                    # return path if neighbour is goal
+                    if neighbor == destination_vertex:
+                        return new_path
+
+                # mark node as explored
+                visited.append(node)
+
+        # in case there's no path between the 2 nodes
+        return "The storm is too dangerous. There is no path."
+        
+
 
     def dfs(self, starting_vertex, destination_vertex):
         """
