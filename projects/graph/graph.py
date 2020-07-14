@@ -104,41 +104,25 @@ class Graph:
         """
         # keep track of all the paths to be checked
         q = Queue()
-        q.enqueue(starting_vertex)
+        q.enqueue([starting_vertex])
         # keep track of explored nodes
-        visited = []
-        #return path if start is goal
-        if starting_vertex == destination_vertex:
-            return "You have arrived"
+        visited = set()
         
         # keeps looping until all possible paths have been checked
-        while q:
+        while q.size() > 0:
             # pop the first path from the queue
             path = q.dequeue()
-            print("This is my path: ", path)
+            current_node = path[-1]
 
-            # get the last node from the path
-            if type(path) is not 'list':
-                path = [path]
-            node = path[len(path)]
-            if node not in visited:
-                print("This is my node: ", node)
-                neighbors = self.get_neighbors(node)
-                print('These are my neighbors',neighbors)
+            if current_node == destination_vertex:
+                return path
 
-                # go through all neighbour nodes, construct a new path and
-                # push it into the queue
+            if current_node not in visited:
+                visited.add(current_node)
+                neighbors = self.get_neighbors(current_node)
                 for neighbor in neighbors:
-                    new_path = list(path)
-                    new_path.append(neighbor)
-                    q.enqueue(new_path)
-
-                    # return path if neighbour is goal
-                    if neighbor == destination_vertex:
-                        return new_path
-
-                # mark node as explored
-                visited.append(node)
+                    next_path = [*path, neighbor]
+                    q.enqueue(next_path)
 
         # in case there's no path between the 2 nodes
         return "The storm is too dangerous. There is no path."
