@@ -1,3 +1,6 @@
+import random
+from util import Queue  # These may come in handy
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -28,6 +31,11 @@ class SocialGraph:
         self.users[self.last_id] = User(name)
         self.friendships[self.last_id] = set()
 
+    def fisher_yates_shuffle(self, l):
+        for i in range(0, len(l)):
+            random_index = random.randint(i, len(l) - 1)
+            l[random_index], l[i] = l[i], l[random_index]
+
     def populate_graph(self, num_users, avg_friendships):
         """
         Takes a number of users and an average number of friendships
@@ -45,8 +53,32 @@ class SocialGraph:
         # !!!! IMPLEMENT ME
 
         # Add users
+        ## use num_users
+        for user in range(num_users):
+            self.add_user(user)
 
         # Create friendships
+        ## make a list with all POSSIBLE friendships
+        ### Example:
+        # 5 users
+        # [(1, 2), (1, 3), (1, 4), (1, 5), (2, 3), (2, 4), (2, 5), (3, 4), (3, 5), (4, 5)]
+        friendships = []
+        for user in range(1, self.last_id + 1):
+            for friend in range(user + 1, num_users + 1):
+                friendship = (user, friend)
+                friendships.append(friendship)
+
+        ## Shuffle the list
+        self.fisher_yates_shuffle(friendships)
+
+        ## Take as many as we need
+        total_friendships = num_users * avg_friendships
+
+        random_friendships = friendships[:total_friendships//2]
+        ## add to self.friendships
+        for friendship in random_friendships:
+            self.add_friendship(friendship[0], friendship[1])
+        
 
     def get_all_social_paths(self, user_id):
         """
@@ -59,12 +91,29 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         # !!!! IMPLEMENT ME
+        q = Queue()
+
+        path = [user_id]
+        q.enqueue(path)
+
+        while q.size() > 0:
+            current_path = q.dequeue()
+            current_node = current_path[-1]
+
+            if current_node not in visited:
+                visited[current_node] = current_path
+                friends = self.friendships[current_node]
+                for friend in friends:
+                    path_copy = current_path[:]
+                    path_copy.append(friend)
+                    q.enqueue(path_copy)
+
         return visited
 
 
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
-    print(sg.friendships)
+    print(sg.friendships) # key is user_id and value is the user_id of their friends
     connections = sg.get_all_social_paths(1)
     print(connections)
