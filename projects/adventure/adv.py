@@ -31,6 +31,19 @@ player = Player(world.starting_room)
 traversal_path = []
 #----------------------------------------------DO NOT TOUCH ANYTHING ABOVE THIS LINE----------------------------------
 
+def dft(starting_room):
+    s = Stack()
+    s.push(starting_room)
+    visited_rooms = set()
+    while s.size() > 0:
+        current_room = s.pop()
+        if current_room not in visited_rooms:
+            print(current_room)
+            visited_rooms.add(current_room)
+            exits = player.current_room.get_exits()
+            for exit in exits:
+                s.push(exit)
+
 
 
 
@@ -56,7 +69,7 @@ for move in traversal_path:
     player.travel(move)
     # print(player.travel)
     visited_rooms.add(player.current_room)
-    print('Current Room: ', player.current_room)
+    print('Current Room: ', player.current_room.get_exits())
 
 if len(visited_rooms) == len(room_graph):
     print(f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited")
